@@ -8,11 +8,23 @@ export const persistToLocalStorage: Middleware =
 
     const state = storeState.getState()
 
-    if (isRelativeState(state) || isAllTimeState(state)) {
+    if (isRelativeState(state)) {
       localStorage.setItem(
         'filters',
         JSON.stringify({
           type: state.type,
+          duration: state.duration,
+        }),
+      )
+    }
+
+    if (isAllTimeState(state)) {
+      localStorage.setItem(
+        'filters',
+        JSON.stringify({
+          type: state.type,
+          from: state.from,
+          duration: state.duration,
         }),
       )
     }
@@ -24,6 +36,7 @@ export const persistToLocalStorage: Middleware =
           type: state.type,
           from: state.from,
           to: state.to,
+          duration: state.duration,
         }),
       )
     }
@@ -36,7 +49,7 @@ export const persistToSessionStorage: Middleware =
     const result = next(arg)
 
     const state = storeState.getState()
-
+    console.log(state)
     if (isRelativeState(state) && state.to < 0) {
       sessionStorage.setItem(
         'filters',

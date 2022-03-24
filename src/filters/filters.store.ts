@@ -1,4 +1,11 @@
-import { createStore, createHook, Action, defaults } from 'react-sweet-state'
+import {
+  createStore,
+  createHook,
+  Action,
+  defaults,
+  createContainer,
+  ContainerComponent,
+} from 'react-sweet-state'
 import {
   addDays,
   eachDayOfInterval,
@@ -11,17 +18,12 @@ import {
   persistToSessionStorage,
 } from './filters.middleware'
 import type { State } from './filters.types'
+import { getInitialState } from './filters.utils'
 
 type Actions = typeof actions
 
 defaults.middlewares.add(persistToLocalStorage)
 defaults.middlewares.add(persistToSessionStorage)
-
-const initialState: State = {
-  type: '7_DAYS',
-  to: 0,
-  duration: 7,
-}
 
 const actions = {
   setDaily:
@@ -132,12 +134,19 @@ const actions = {
 }
 
 const Store = createStore<State, Actions>({
-  initialState,
+  initialState: getInitialState(),
   actions,
   name: 'filters',
 })
 
-export const useFiltersStore = createHook(Store)
+export const FiltersContainer: ContainerComponent<{ key: string }> =
+  createContainer(Store, {
+    onInit:
+      () =>
+      ({ setState }) => {
+        setState(getInitialState())
+      },
+  })
 
 export const useFilters = createHook(Store, {
   selector: state => {
