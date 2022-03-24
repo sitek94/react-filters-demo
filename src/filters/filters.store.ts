@@ -1,4 +1,4 @@
-import { createStore, createHook, Action } from 'react-sweet-state'
+import { createStore, createHook, Action, defaults } from 'react-sweet-state'
 import {
   addDays,
   eachDayOfInterval,
@@ -6,40 +6,16 @@ import {
   startOfDay,
   subDays,
 } from 'date-fns'
-
-type RelativeState =
-  | {
-      type: 'DAILY'
-      to: number
-      duration: number
-    }
-  | {
-      type: '7_DAYS'
-      to: number
-      duration: number
-    }
-  | {
-      type: '28_DAYS'
-      to: number
-      duration: number
-    }
-
-type AllTimeState = {
-  type: 'ALL_TIME'
-  from: Date
-  duration: number
-}
-
-type RangeState = {
-  type: 'RANGE'
-  from: Date
-  to: Date
-  duration: number
-}
-
-type State = RelativeState | AllTimeState | RangeState
+import {
+  persistToLocalStorage,
+  persistToSessionStorage,
+} from './filters.middleware'
+import type { State } from './filters.types'
 
 type Actions = typeof actions
+
+defaults.middlewares.add(persistToLocalStorage)
+defaults.middlewares.add(persistToSessionStorage)
 
 const initialState: State = {
   type: '7_DAYS',
